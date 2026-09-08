@@ -130,6 +130,8 @@ pytest -q
 
 CI runs on every PR (lint + pytest 3.11–3.13 + wheel smoke). Releases publish to PyPI via Trusted Publishing — see [`docs/CI.md`](docs/CI.md).
 
+Design plans (architecture → spike → facade → harnesses → CI) are checked in under [`_plans/`](_plans/README.md).
+
 ## Python vs Ruby
 
 Python. Ruby only if this must ship as an EasyPost gem.
