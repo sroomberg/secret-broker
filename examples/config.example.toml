@@ -1,0 +1,47 @@
+# Copy to ~/.config/secret-broker/config.toml (or set SECRET_BROKER_CONFIG).
+
+[broker]
+# Default output format for humans: table | json
+default_format = "table"
+# Audit log path (JSONL, no secret values)
+audit_path = "~/.local/state/secret-broker/audit.jsonl"
+# Policy file
+policy_path = "~/.config/secret-broker/policy.toml"
+
+# --- Adapters (enable the ones you use) ---
+
+[stores.env]
+type = "env"
+# Resolves secret://env/VAR_NAME from the broker process environment.
+# Useful for CI demos; prefer real backends for production.
+
+[stores.memory]
+type = "memory"
+# In-process only (tests / doctor leak-check). Not persisted.
+
+[stores.aws]
+type = "aws_secrets_manager"
+region = "us-east-1"
+# Optional profile; otherwise default AWS credential chain.
+# profile = "dev"
+# Ref form: secret://aws/<secret-id>
+# Optional JSON key: secret://aws/<secret-id>#<json-key>
+
+[stores.op]
+type = "onepassword"
+# Uses `op` CLI. Ref: secret://op/<vault>/<item>[/<field>]
+# account = "my.1password.com"
+
+[stores.vault]
+type = "vault"
+addr = "https://vault.example.com:8200"
+# token_env = "VAULT_TOKEN"
+# Ref: secret://vault/<mount>/<path>#<field>
+# mount default "secret" if omitted: secret://vault/kv/data/app#password
+
+# --- Global policy (also overridable per-ref in policy.toml) ---
+
+[policy]
+default_deny_hosts = true
+allowed_hosts = ["api.github.com", "httpbin.org"]
+allowed_bins = ["curl", "git", "gh", "aws", "terraform"]

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "secret-broker": {
+      "command": "secret-broker",
+      "args": ["mcp"],
+      "env": {
+        "SECRET_BROKER_CONFIG": "/home/YOU/.config/secret-broker/config.toml"
+      }
+    }
+  }
+}
