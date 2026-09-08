@@ -35,6 +35,6 @@ No long-lived `PYPI_API_TOKEN` is required.
 pip install -e '.[dev,aws,vault]'
 ruff check src tests
 ruff format --check src tests
-pytest -q
+pytest -q -m "not e2e_live"
 python -m build && twine check dist/*
 ```

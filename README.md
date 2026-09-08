@@ -124,9 +124,12 @@ CLI, MCP, and harness installers share the same broker so a policy hole cannot e
 
 ```bash
 pip install -e '.[dev]'
-pytest -q
-# New harness: failing test in tests/test_harness_plugins.py → implement plugin → register
+pytest -q -m "not e2e_live"   # unit + local E2E (CI default)
+pytest -q -m e2e              # local end-to-end only
+# Live backends (opt-in): see TESTING.md
 ```
+
+Full testing guide for humans and agents: [`TESTING.md`](TESTING.md).
 
 CI runs on every PR (lint + pytest 3.11–3.13 + wheel smoke). Releases publish to PyPI via Trusted Publishing — see [`docs/CI.md`](docs/CI.md).
 
