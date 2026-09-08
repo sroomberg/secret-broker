@@ -1,0 +1,4 @@
+{
+  "command": "secret-broker",
+  "args": ["mcp"]
+}

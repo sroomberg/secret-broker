@@ -1,0 +1,15 @@
+{
+  "PreToolUse": [
+    {
+      "matcher": "^Bash$|^Shell$|^local_shell$",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 ${SECRET_BROKER_HOOK}",
+          "timeout": 10,
+          "statusMessage": "secret-broker policy"
+        }
+      ]
+    }
+  ]
+}

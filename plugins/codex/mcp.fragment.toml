@@ -1,0 +1,4 @@
+[mcp_servers.secret-broker]
+command = "secret-broker"
+args = ["mcp"]
+enabled = true

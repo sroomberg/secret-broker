@@ -1,0 +1,7 @@
+{
+  "command": "secret-broker",
+  "args": ["mcp"],
+  "env": {
+    "SECRET_BROKER_CONFIG": "${SECRET_BROKER_CONFIG}"
+  }
+}
