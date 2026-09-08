@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import shutil
+from pathlib import Path
+
 import typer
 
 from secret_broker import __version__
 from secret_broker.broker import Broker
 from secret_broker.cli.format import emit
 from secret_broker.config import load_config
+from secret_broker.harness.base import Scope
+from secret_broker.harness.registry import get_plugin, list_plugins
 from secret_broker.policy import PolicyDenied
 
 app = typer.Typer(
@@ -23,6 +28,9 @@ app = typer.Typer(
 policy_app = typer.Typer(help="Show and update destination allowlists.")
 app.add_typer(policy_app, name="policy")
 
+harness_app = typer.Typer(help="Install MCP (+hooks) into agent harnesses.")
+app.add_typer(harness_app, name="harness")
+
 
 def _broker(ctx: typer.Context) -> Broker:
     return ctx.obj["broker"]
@@ -30,6 +38,21 @@ def _broker(ctx: typer.Context) -> Broker:
 
 def _fmt(ctx: typer.Context) -> str:
     return ctx.obj["format"]
+
+
+def _broker_command() -> list[str]:
+    exe = shutil.which("secret-broker")
+    if exe:
+        return [exe, "mcp"]
+    return ["python3", "-m", "secret_broker", "mcp"]
+
+
+def _resolve_home(home: str | None) -> Path:
+    return Path(home) if home else Path.home()
+
+
+def _resolve_root(root: str | None) -> Path:
+    return Path(root) if root else Path.cwd()
 
 
 @app.callback()
@@ -49,6 +72,7 @@ def main_callback(
     ctx.obj["config"] = cfg
     ctx.obj["format"] = fmt
     ctx.obj["broker"] = Broker(config=cfg, actor=actor)
+    ctx.obj["config_opt"] = config
 
 
 @app.command("version")
@@ -237,9 +261,27 @@ def mcp_cmd(ctx: typer.Context) -> None:
 
 
 @app.command("doctor")
-def doctor_cmd(ctx: typer.Context) -> None:
-    """Adapter auth, policy files, leak-test self-check."""
+def doctor_cmd(
+    ctx: typer.Context,
+    home: str | None = typer.Option(None, "--home"),
+    root: str | None = typer.Option(None, "--root"),
+) -> None:
+    """Adapter auth, policy files, leak-test, and harness install status."""
     report = _broker(ctx).doctor()
+    home_p = _resolve_home(home)
+    root_p = _resolve_root(root)
+    for plugin in list_plugins():
+        st = plugin.status(scope=Scope.USER, root=root_p, home=home_p)
+        report["checks"].append(
+            {
+                "name": f"harness:{plugin.id}:user",
+                "ok": True,
+                "detail": (
+                    f"installed={st.installed} mcp={st.mcp} hooks={st.hooks} "
+                    f"({st.detail})"
+                ),
+            }
+        )
     lines = [
         f"{'PASS' if c['ok'] else 'FAIL':4}  {c['name']}: {c['detail']}" for c in report["checks"]
     ]
@@ -247,6 +289,121 @@ def doctor_cmd(ctx: typer.Context) -> None:
     lines.append("OK" if report["ok"] else "FAILED")
     emit(report, fmt=_fmt(ctx), human_lines=lines)
     raise typer.Exit(code=0 if report["ok"] else 1)
+
+
+@harness_app.command("list")
+def harness_list(ctx: typer.Context) -> None:
+    """List supported agent harness plugins."""
+    plugins = list_plugins()
+    payload = [
+        {
+            "id": p.id,
+            "name": p.name,
+            "supports_mcp": p.supports_mcp,
+            "supports_hooks": p.supports_hooks,
+        }
+        for p in plugins
+    ]
+    lines = [
+        f"{p.id:14}  {p.name:14}  mcp={p.supports_mcp}  hooks={p.supports_hooks}"
+        for p in plugins
+    ]
+    emit(payload, fmt=_fmt(ctx), human_lines=lines)
+
+
+@harness_app.command("status")
+def harness_status(
+    ctx: typer.Context,
+    harness: str = typer.Argument(...),
+    scope: Scope = typer.Option(Scope.USER, "--scope"),
+    home: str | None = typer.Option(None, "--home"),
+    root: str | None = typer.Option(None, "--root"),
+) -> None:
+    """Show whether secret-broker is installed for a harness."""
+    try:
+        plugin = get_plugin(harness)
+    except KeyError as exc:
+        typer.secho(f"unknown harness: {harness}", err=True)
+        raise typer.Exit(code=2) from exc
+    st = plugin.status(scope=scope, root=_resolve_root(root), home=_resolve_home(home))
+    emit(
+        st.model_dump(),
+        fmt=_fmt(ctx),
+        human_lines=[
+            f"{st.harness}: installed={st.installed} mcp={st.mcp} hooks={st.hooks}",
+            f"paths: {', '.join(st.paths)}",
+            st.detail,
+        ],
+    )
+
+
+@harness_app.command("install")
+def harness_install(
+    ctx: typer.Context,
+    harness: str | None = typer.Argument(None),
+    all_harnesses: bool = typer.Option(False, "--all", help="Install into every known harness"),
+    scope: Scope = typer.Option(Scope.USER, "--scope"),
+    hooks: bool = typer.Option(False, "--hooks", help="Also install PreToolUse block hooks"),
+    home: str | None = typer.Option(None, "--home"),
+    root: str | None = typer.Option(None, "--root"),
+) -> None:
+    """Install MCP server (and optional hooks) into a harness."""
+    if all_harnesses:
+        targets = list_plugins()
+    elif harness:
+        try:
+            targets = [get_plugin(harness)]
+        except KeyError as exc:
+            typer.secho(f"unknown harness: {harness}", err=True)
+            raise typer.Exit(code=2) from exc
+    else:
+        typer.secho("provide HARNESS or --all", err=True)
+        raise typer.Exit(code=2)
+
+    config_path = ctx.obj.get("config_opt")
+    home_p = _resolve_home(home)
+    root_p = _resolve_root(root)
+    cmd = _broker_command()
+    results = []
+    for plugin in targets:
+        result = plugin.install(
+            scope=scope,
+            root=root_p,
+            home=home_p,
+            broker_command=cmd,
+            config_path=config_path,
+            with_hooks=hooks,
+        )
+        results.append(result.model_dump())
+        typer.secho(
+            f"{plugin.id}: mcp={result.mcp_installed} hooks={result.hooks_installed} "
+            f"→ {', '.join(result.paths_touched)}",
+            fg=typer.colors.GREEN,
+        )
+    if _fmt(ctx) == "json":
+        emit(results, fmt="json")
+
+
+@harness_app.command("uninstall")
+def harness_uninstall(
+    ctx: typer.Context,
+    harness: str = typer.Argument(...),
+    scope: Scope = typer.Option(Scope.USER, "--scope"),
+    home: str | None = typer.Option(None, "--home"),
+    root: str | None = typer.Option(None, "--root"),
+) -> None:
+    """Remove secret-broker MCP/hooks from a harness."""
+    try:
+        plugin = get_plugin(harness)
+    except KeyError as exc:
+        typer.secho(f"unknown harness: {harness}", err=True)
+        raise typer.Exit(code=2) from exc
+    result = plugin.uninstall(scope=scope, root=_resolve_root(root), home=_resolve_home(home))
+    emit(
+        result.model_dump(),
+        fmt=_fmt(ctx),
+        human_lines=[f"{result.harness}: {result.detail}"],
+    )
 
 
 def main() -> None:

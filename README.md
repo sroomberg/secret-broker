@@ -50,10 +50,18 @@ secret-broker run --ref TOKEN=secret://memory/TOKEN -- python3 -c 'import os; pr
 
 secret-broker audit
 secret-broker doctor
-secret-broker mcp          # stdio MCP for Cursor
+secret-broker mcp          # stdio MCP for any harness
+
+# Install into agent harnesses (Cursor, Claude Code, Codex, OpenCode, Continue)
+secret-broker harness list
+secret-broker harness install cursor
+secret-broker harness install claude-code --hooks
+secret-broker harness install --all --scope project --hooks
 ```
 
 Shell completions: `secret-broker --install-completion`
+
+Harness details: [`docs/HARNESSES.md`](docs/HARNESSES.md).
 
 ### Reference forms
 
@@ -65,7 +73,16 @@ Shell completions: `secret-broker --install-completion`
 | 1Password | `secret://op/<vault>/<item>/<field>` |
 | Vault KV | `secret://vault/<mount>/<path>#<field>` |
 
-## MCP (Cursor)
+## MCP + harness plugins
+
+Prefer the installer (writes the correct file for each product):
+
+```bash
+secret-broker harness install cursor
+# or: claude-code | codex | opencode | continue
+```
+
+Manual Cursor example (`.cursor/mcp.json` / `~/.cursor/mcp.json`):
 
 ```json
 {
@@ -81,13 +98,15 @@ Shell completions: `secret-broker --install-completion`
 Tools: `list_secrets`, `describe_secret`, `api_call`, `run_command`, `list_stores`, `policy_show`, `audit_tail`.  
 **Not provided:** anything that returns secret bytes.
 
+Claude Code / Codex can also install a **PreToolUse** hook (`--hooks`) that blocks `aws get-secret-value`, `op read`, `vault kv get`, etc., and steers the agent back to `secret-broker`.
+
 ## Architecture
 
 ```text
-Cursor / CLI
-    │  refs only
+Cursor / Claude Code / Codex / OpenCode / Continue / CLI
+    │  refs only (+ optional PreToolUse hooks)
     ▼
-secret-broker (Typer CLI  ≡  MCP)
+secret-broker (Typer CLI  ≡  MCP  ≡  harness plugins)
     │  shared Broker library
     ├─ policy (host/bin allowlists)
     ├─ audit JSONL (no value field)
@@ -97,7 +116,15 @@ secret-broker (Typer CLI  ≡  MCP)
      your existing stores
 ```
 
-CLI and MCP import the same `Broker` so a policy hole cannot exist on only one surface.
+CLI, MCP, and harness installers share the same broker so a policy hole cannot exist on only one surface.
+
+## Development (TDD)
+
+```bash
+pip install -e '.[dev]'
+pytest -q
+# New harness: failing test in tests/test_harness_plugins.py → implement plugin → register
+```
 
 ## Python vs Ruby
 
