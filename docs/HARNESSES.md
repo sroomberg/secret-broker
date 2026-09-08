@@ -1,6 +1,8 @@
 # Agent harness plugins
 
-`secret-broker` installs into coding-agent harnesses as an **MCP server** (and optional **PreToolUse hooks** where the harness supports them). The broker core stays harness-agnostic; each plugin only knows how to edit that product’s config files.
+`secret-broker` installs into coding-agent harnesses as an **MCP server** (and optional **PreToolUse hooks** where the harness supports them).
+
+**Packaging model:** publishable artifacts live in [`plugins/`](../plugins/README.md); Python installers live in `src/secret_broker/harness/`. Decision record: [`_plans/007-harness-plugin-publishing.md`](../_plans/007-harness-plugin-publishing.md).
 
 ## Install
 
@@ -22,35 +24,45 @@ secret-broker harness uninstall cursor
 
 ## Matrix
 
-| Harness | Plugin id | MCP config | Hooks | Notes |
+| Harness | Plugin id | Artifacts | MCP config | Hooks |
 | --- | --- | --- | --- | --- |
-| **Cursor** | `cursor` | `~/.cursor/mcp.json` or `.cursor/mcp.json` | — | MCP only |
-| **Claude Code** | `claude-code` | `~/.claude.json` or project `.mcp.json` | `.claude/settings.json` PreToolUse | Blocks plaintext secret CLIs |
-| **Codex** | `codex` | `~/.codex/config.toml` or `.codex/config.toml` | `.codex/hooks.json` | Enables `[features] hooks` |
-| **OpenCode** | `opencode` | `~/.config/opencode/opencode.json` or `opencode.json` | — | `mcp` local command array |
-| **Continue** | `continue` | `~/.continue/config.json` or `.continue/config.json` | — | MCP only |
+| **Cursor** | `cursor` | `plugins/cursor/` | `~/.cursor/mcp.json` / `.cursor/mcp.json` | — |
+| **Claude Code** | `claude-code` | `plugins/claude-code/` | `~/.claude.json` / `.mcp.json` | PreToolUse |
+| **Codex** | `codex` | `plugins/codex/` | `~/.codex/config.toml` | `hooks.json` |
+| **OpenCode** | `opencode` | `plugins/opencode/` | `opencode.json` | — |
+| **Continue** | `continue` | `plugins/continue/` | `.continue/config.json` | — |
 
 ## Architecture
 
 ```text
-secret-broker harness install <id>
+plugins/<id>/          publishable manifests (marketplace-ready)
         │
         ▼
- HarnessPlugin.install()
-        ├─ write MCP entry → secret-broker mcp
-        └─ optional: copy block_secret_read.py + register PreToolUse
+secret-broker harness install <id>     installer SDK (may leave the monorepo later)
+        ├─ merge MCP fragment → harness config
+        └─ optional hooks
                 │
                 ▼
- Agent never gets get_secret; hook denies aws get-secret-value / op read / vault kv get
+secret-broker mcp      core (stays in this repo)
 ```
 
-Adding a harness:
+## Adding a harness
 
-1. Write failing tests in `tests/test_harness_plugins.py` (path markers + install/uninstall).
-2. Implement `secret_broker/harness/<name>.py` extending `HarnessPlugin`.
-3. Register in `harness/registry.py`.
-4. Document in this file.
+1. Add `plugins/<id>/plugin.json` + MCP fragment (+ hooks) per `plugins/CONTRACT.md`.
+2. Failing tests in `tests/test_harness_plugins.py` and `tests/test_plugin_artifacts.py`.
+3. Implement `HarnessPlugin` under `src/secret_broker/harness/`.
+4. Register in `harness/registry.py`.
+5. Document here.
+
+## Publishing / breakout
+
+| Phase | Approach |
+| --- | --- |
+| **Now** | Monorepo; `harness install`; assets in `plugins/` |
+| **Next** | Per-plugin GitHub Release zips / marketplace packages |
+| **Later** | Separate repos + registry versions; **or** delete in-tree plugins once marketplace is primary |
+| **Avoid** | Git submodules |
 
 ## Security
 
-Hooks are **best-effort** (same caveat as AWS `asm-exec`). The real boundary is: no reveal tool on the MCP surface + destination allowlists on `call`/`run`. Hooks only steer agents away from native store CLIs that dump plaintext.
+Hooks are **best-effort** (same caveat as AWS `asm-exec`). The real boundary is: no reveal tool on the MCP surface + destination allowlists on `call`/`run`.

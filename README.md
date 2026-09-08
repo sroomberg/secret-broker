@@ -77,12 +77,16 @@ Harness details: [`docs/HARNESSES.md`](docs/HARNESSES.md).
 
 ## MCP + harness plugins
 
-Prefer the installer (writes the correct file for each product):
+Publishable harness artifacts live in [`plugins/`](plugins/). Installers:
 
 ```bash
 secret-broker harness install cursor
 # or: claude-code | codex | opencode | continue
+secret-broker harness install --all --scope project --hooks
 ```
+
+Packaging / breakout strategy (monorepo now → registries later, **not** submodules):  
+[`_plans/007-harness-plugin-publishing.md`](_plans/007-harness-plugin-publishing.md).
 
 Manual Cursor example (`.cursor/mcp.json` / `~/.cursor/mcp.json`):
 

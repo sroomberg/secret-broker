@@ -17,6 +17,7 @@ def test_plans_directory_has_indexed_documents():
         "004-harness-plugins-tdd.md",
         "005-github-actions.md",
         "006-testing-guide.md",
+        "007-harness-plugin-publishing.md",
     ]
     for name in expected:
         path = PLANS / name

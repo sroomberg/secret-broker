@@ -1,0 +1,18 @@
+{
+  "description": "Block plaintext secret CLI reads; use secret-broker MCP instead",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${SECRET_BROKER_HOOK}",
+            "timeout": 10,
+            "statusMessage": "secret-broker policy"
+          }
+        ]
+      }
+    ]
+  }
+}

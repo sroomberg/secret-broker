@@ -10,6 +10,7 @@ Design and execution plans for `secret-broker`, checked into source so agents an
 | [`004-harness-plugins-tdd.md`](004-harness-plugins-tdd.md) | implemented | TDD plugins for Cursor, Claude Code, Codex, OpenCode, Continue |
 | [`005-github-actions.md`](005-github-actions.md) | implemented | CI matrix + Trusted Publishing to PyPI |
 | [`006-testing-guide.md`](006-testing-guide.md) | implemented | Structured TESTING.md + local/live E2E markers |
+| [`007-harness-plugin-publishing.md`](007-harness-plugin-publishing.md) | accepted | Monorepo `plugins/`; break out via packages, not submodules |
 
 Related living docs (not plans): `SPIKE.md`, `docs/HARNESSES.md`, `docs/CI.md`, `docs/CONTRIBUTING.md`.
 
