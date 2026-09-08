@@ -50,6 +50,8 @@ include = [
   "/src",
   "/tests",
   "/examples",
+  "/_plans",
+  "/docs",
   "/README.md",
   "/SPIKE.md",
   "/LICENSE",
