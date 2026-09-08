@@ -13,3 +13,4 @@ htmlcov/
 secret-broker.toml
 *.jsonl
 .DS_Store
+junit-*.xml
