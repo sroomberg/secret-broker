@@ -54,11 +54,7 @@ class Broker:
 
     def list(self, store: str | None = None) -> list[SecretMeta]:
         metas: list[SecretMeta] = []
-        targets = (
-            {store: self.adapters[store]}
-            if store
-            else self.adapters
-        )
+        targets = {store: self.adapters[store]} if store else self.adapters
         if store and store not in self.adapters:
             raise AdapterError(f"unknown store: {store}")
         for adapter in targets.values():
@@ -321,9 +317,7 @@ class Broker:
             )
 
         return {
-            "ok": all(
-                c["ok"] for c in checks if c["name"] not in {"bin:op", "bin:vault"}
-            ),
+            "ok": all(c["ok"] for c in checks if c["name"] not in {"bin:op", "bin:vault"}),
             "checks": checks,
         }
 

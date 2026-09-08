@@ -30,9 +30,7 @@ class AwsSecretsManagerAdapter(SecretAdapter):
         try:
             import boto3
         except ImportError as exc:
-            raise AdapterError(
-                "boto3 not installed; pip install 'secret-broker[aws]'"
-            ) from exc
+            raise AdapterError("boto3 not installed; pip install 'secret-broker[aws]'") from exc
         session_kwargs: dict[str, Any] = {}
         if self.profile:
             session_kwargs["profile_name"] = self.profile

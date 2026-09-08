@@ -27,10 +27,20 @@ dev = [
   "pytest>=8.0",
   "pytest-asyncio>=0.23",
   "ruff>=0.6",
+  "build>=1.2",
+  "twine>=5.0",
+  "pyyaml>=6.0",
 ]
 
 [project.scripts]
 secret-broker = "secret_broker.cli.app:main"
+
+[project.urls]
+Homepage = "https://github.com/sroomberg/secret-broker"
+Repository = "https://github.com/sroomberg/secret-broker"
+Issues = "https://github.com/sroomberg/secret-broker/issues"
+Changelog = "https://github.com/sroomberg/secret-broker/releases"
+Documentation = "https://github.com/sroomberg/secret-broker/blob/master/docs/CI.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/secret_broker"]

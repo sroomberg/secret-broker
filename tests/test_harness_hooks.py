@@ -32,7 +32,9 @@ def test_hook_allows_safe_command():
         {
             "hook_event_name": "PreToolUse",
             "tool_name": "Bash",
-            "tool_input": {"command": "secret-broker call --url https://example.com --ref secret://env/T"},
+            "tool_input": {
+                "command": "secret-broker call --url https://example.com --ref secret://env/T"
+            },
         }
     )
     assert proc.returncode == 0
@@ -42,9 +44,7 @@ def test_hook_blocks_aws_get_secret_value():
     proc = _run(
         {
             "tool_name": "Bash",
-            "tool_input": {
-                "command": "aws secretsmanager get-secret-value --secret-id foo"
-            },
+            "tool_input": {"command": "aws secretsmanager get-secret-value --secret-id foo"},
         }
     )
     assert proc.returncode == 2
