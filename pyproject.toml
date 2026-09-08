@@ -53,6 +53,7 @@ include = [
   "/_plans",
   "/docs",
   "/README.md",
+  "/TESTING.md",
   "/SPIKE.md",
   "/LICENSE",
   "/pyproject.toml",
@@ -62,6 +63,11 @@ include = [
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+  "unit: fast offline unit tests",
+  "e2e: local end-to-end tests (CLI/broker, no cloud)",
+  "e2e_live: live backend E2E; requires SECRET_BROKER_E2E_LIVE=1",
+]
 
 [tool.ruff]
 line-length = 100

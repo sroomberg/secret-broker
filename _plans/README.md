@@ -9,6 +9,7 @@ Design and execution plans for `secret-broker`, checked into source so agents an
 | [`003-federated-facade.md`](003-federated-facade.md) | implemented | Build facade over AWS / 1Password / Vault after spike showed no federation |
 | [`004-harness-plugins-tdd.md`](004-harness-plugins-tdd.md) | implemented | TDD plugins for Cursor, Claude Code, Codex, OpenCode, Continue |
 | [`005-github-actions.md`](005-github-actions.md) | implemented | CI matrix + Trusted Publishing to PyPI |
+| [`006-testing-guide.md`](006-testing-guide.md) | implemented | Structured TESTING.md + local/live E2E markers |
 
 Related living docs (not plans): `SPIKE.md`, `docs/HARNESSES.md`, `docs/CI.md`, `docs/CONTRIBUTING.md`.
 

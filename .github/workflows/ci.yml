@@ -54,7 +54,7 @@ jobs:
           pip install -e ".[dev,aws,vault]"
 
       - name: Run tests
-        run: pytest -q --junitxml=junit-${{ matrix.python-version }}.xml
+        run: pytest -q -m "not e2e_live" --junitxml=junit-${{ matrix.python-version }}.xml
 
       - name: Upload junit
         if: always()
