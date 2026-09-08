@@ -61,9 +61,7 @@ def main_callback(
     config: str | None = typer.Option(
         None, "--config", envvar="SECRET_BROKER_CONFIG", help="Path to config.toml"
     ),
-    format: str | None = typer.Option(
-        None, "--format", help="table|json (default from config)"
-    ),
+    format: str | None = typer.Option(None, "--format", help="table|json (default from config)"),
     actor: str = typer.Option("cli", "--actor", help="Audit actor label"),
 ) -> None:
     cfg = load_config(config)
@@ -276,10 +274,7 @@ def doctor_cmd(
             {
                 "name": f"harness:{plugin.id}:user",
                 "ok": True,
-                "detail": (
-                    f"installed={st.installed} mcp={st.mcp} hooks={st.hooks} "
-                    f"({st.detail})"
-                ),
+                "detail": (f"installed={st.installed} mcp={st.mcp} hooks={st.hooks} ({st.detail})"),
             }
         )
     lines = [
@@ -305,8 +300,7 @@ def harness_list(ctx: typer.Context) -> None:
         for p in plugins
     ]
     lines = [
-        f"{p.id:14}  {p.name:14}  mcp={p.supports_mcp}  hooks={p.supports_hooks}"
-        for p in plugins
+        f"{p.id:14}  {p.name:14}  mcp={p.supports_mcp}  hooks={p.supports_hooks}" for p in plugins
     ]
     emit(payload, fmt=_fmt(ctx), human_lines=lines)
 

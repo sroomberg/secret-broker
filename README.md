@@ -1,5 +1,7 @@
 # Secret broker
 
+[![CI](https://github.com/sroomberg/secret-broker/actions/workflows/ci.yml/badge.svg)](https://github.com/sroomberg/secret-broker/actions/workflows/ci.yml)
+
 Federated **facade** (not a vault) so AI agents can use secrets from AWS Secrets Manager, 1Password, HashiCorp Vault, and env — **without ever reading plaintext**.
 
 Agents get `secret://…` references. A trusted broker process resolves the value and injects it into an HTTP call or child process. Values never appear in MCP results, chat, audit logs, or error strings.
@@ -125,6 +127,8 @@ pip install -e '.[dev]'
 pytest -q
 # New harness: failing test in tests/test_harness_plugins.py → implement plugin → register
 ```
+
+CI runs on every PR (lint + pytest 3.11–3.13 + wheel smoke). Releases publish to PyPI via Trusted Publishing — see [`docs/CI.md`](docs/CI.md).
 
 ## Python vs Ruby
 

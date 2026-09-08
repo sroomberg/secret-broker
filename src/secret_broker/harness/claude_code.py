@@ -114,9 +114,7 @@ class ClaudeCodePlugin(HarnessPlugin):
         hooks = data.setdefault("hooks", {})
         pre = hooks.setdefault("PreToolUse", [])
         # Remove prior secret-broker entries
-        hooks["PreToolUse"] = [
-            g for g in pre if HOOK_MARKER not in json.dumps(g)
-        ]
+        hooks["PreToolUse"] = [g for g in pre if HOOK_MARKER not in json.dumps(g)]
         command = f"{sys.executable} {script}"
         hooks["PreToolUse"].append(
             {
@@ -143,8 +141,9 @@ class ClaudeCodePlugin(HarnessPlugin):
         hooks = data.get("hooks")
         if isinstance(hooks, dict) and "PreToolUse" in hooks:
             hooks["PreToolUse"] = [
-                g for g in hooks["PreToolUse"] if HOOK_MARKER not in json.dumps(g)
-                and "secret-broker" not in json.dumps(g)
+                g
+                for g in hooks["PreToolUse"]
+                if HOOK_MARKER not in json.dumps(g) and "secret-broker" not in json.dumps(g)
             ]
             data["hooks"] = hooks
         write_json(settings, data)

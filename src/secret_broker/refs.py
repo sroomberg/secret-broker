@@ -53,10 +53,7 @@ def parse_ref(value: str) -> SecretRef:
 
     body = body.lstrip("/")
     if "/" not in body:
-        raise RefError(
-            "reference must be secret://<store>/<path>[#field]; "
-            f"got {value!r}"
-        )
+        raise RefError(f"reference must be secret://<store>/<path>[#field]; got {value!r}")
     store, path = body.split("/", 1)
     store = unquote(store).strip()
     path = unquote(path).strip().strip("/")

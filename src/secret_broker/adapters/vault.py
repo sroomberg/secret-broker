@@ -34,9 +34,7 @@ class VaultAdapter(SecretAdapter):
         try:
             import hvac
         except ImportError as exc:
-            raise AdapterError(
-                "hvac not installed; pip install 'secret-broker[vault]'"
-            ) from exc
+            raise AdapterError("hvac not installed; pip install 'secret-broker[vault]'") from exc
         if not self.addr:
             raise AdapterError("vault addr not configured (addr or VAULT_ADDR)")
         token = os.environ.get(self.token_env)

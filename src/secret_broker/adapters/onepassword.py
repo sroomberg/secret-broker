@@ -102,9 +102,7 @@ class OnePasswordAdapter(SecretAdapter):
     def _parse_path(self, ref: SecretRef) -> tuple[str, str, str | None]:
         parts = ref.path.split("/")
         if len(parts) < 2:
-            raise AdapterError(
-                "op refs must be secret://op/<vault>/<item>[/<field>] or #field"
-            )
+            raise AdapterError("op refs must be secret://op/<vault>/<item>[/<field>] or #field")
         vault, item = parts[0], parts[1]
         field = ref.field
         if len(parts) >= 3 and not field:
