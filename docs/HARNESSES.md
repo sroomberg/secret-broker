@@ -18,9 +18,12 @@ secret-broker harness install --all --scope project --hooks
 secret-broker harness list
 secret-broker harness status cursor
 secret-broker harness uninstall cursor
+secret-broker harness package --dest dist/plugins
 ```
 
 `--home` / `--root` override paths (used in tests and CI).
+
+Installers read `plugins/<id>/` artifacts and refuse unsupported `contract_version` (`plugins/CONTRACT.md`).
 
 ## Matrix
 

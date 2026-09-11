@@ -6,6 +6,7 @@ import json
 import sys
 from pathlib import Path
 
+from secret_broker.harness.assets import ensure_plugin_contract
 from secret_broker.harness.base import (
     HarnessPlugin,
     HarnessStatus,
@@ -67,9 +68,9 @@ class CodexPlugin(HarnessPlugin):
         config_path: str | None,
         with_hooks: bool,
     ) -> InstallResult:
+        ensure_plugin_contract(self.id)
         cfg = self._config_path(scope=scope, root=root, home=home)
         upsert_codex_mcp(cfg, broker_command, config_path)
-        # Ensure features.hooks can be enabled when hooks requested
         paths = [str(cfg)]
         hooks_installed = False
         if with_hooks:
@@ -93,7 +94,6 @@ class CodexPlugin(HarnessPlugin):
         hooks_path = self._hooks_path(scope=scope, root=root, home=home)
         if hooks_path.exists():
             data = read_json(hooks_path)
-            # Drop PreToolUse groups that reference secret-broker
             pre = data.get("PreToolUse") or data.get("hooks", {}).get("PreToolUse")
             if isinstance(pre, list):
                 filtered = [g for g in pre if "secret-broker" not in json.dumps(g)]

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from secret_broker.harness.assets import materialize_mcp_entry
 from secret_broker.harness.base import (
     SERVER_NAME,
     HarnessPlugin,
@@ -13,7 +14,6 @@ from secret_broker.harness.base import (
 )
 from secret_broker.harness.common import (
     json_has_server,
-    mcp_stdio_entry,
     merge_mcp_servers_json,
     remove_mcp_server_json,
 )
@@ -53,7 +53,12 @@ class OpenCodePlugin(HarnessPlugin):
         with_hooks: bool,
     ) -> InstallResult:
         path = self._path(scope=scope, root=root, home=home)
-        entry = mcp_stdio_entry(broker_command, config_path=config_path, style="opencode")
+        entry = materialize_mcp_entry(
+            self.id,
+            broker_command=broker_command,
+            config_path=config_path,
+            style="opencode",
+        )
         merge_mcp_servers_json(path, entry=entry, key="mcp", server_name=SERVER_NAME)
         return InstallResult(
             harness=self.id,
