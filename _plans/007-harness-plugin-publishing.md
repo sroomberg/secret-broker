@@ -1,6 +1,6 @@
 # Plan: Writing & publishing harness plugins (monorepo → optional split)
 
-**Status:** accepted (direction)  
+**Status:** accepted; **near-term monorepo path implemented**  
 **Related:** `004-harness-plugins-tdd.md`, `docs/HARNESSES.md`, `plugins/`
 
 ## Question
@@ -64,9 +64,11 @@ That couples **publishable harness artifacts** (JSON manifests, hook bundles, ma
 
 | Channel | What ships | How |
 | --- | --- | --- |
-| **PyPI `secret-broker`** | Core + installer + embedded `plugins/` assets | existing Publish workflow |
-| **GitHub Release** | Optional per-plugin zip from `plugins/<id>/` | future job matrix |
-| **In-tree CLI** | `secret-broker harness install <id>` | primary UX today |
+| **PyPI `secret-broker`** | Core + installer + embedded `plugins/` assets | Publish workflow |
+| **GitHub Release** | Per-plugin zip from `plugins/<id>/` | `secret-broker harness package` + publish workflow attaches zips |
+| **In-tree CLI** | `secret-broker harness install <id>` | Reads artifacts; refuses unsupported `contract_version` |
+
+**Near-term status:** implemented (installers wired to artifacts, contract gate, CI validate/package, release zip attach).
 
 ### Medium term (still monorepo, separate versioning)
 

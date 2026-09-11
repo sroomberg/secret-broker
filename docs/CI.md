@@ -4,8 +4,8 @@
 
 | Workflow | Trigger | Purpose |
 | --- | --- | --- |
-| [`ci.yml`](../.github/workflows/ci.yml) | push / PR | Ruff, pytest on 3.11–3.13, build + wheel smoke test |
-| [`publish.yml`](../.github/workflows/publish.yml) | GitHub Release / manual | Build artifacts; publish to TestPyPI or PyPI via **Trusted Publishing** (OIDC) |
+| [`ci.yml`](../.github/workflows/ci.yml) | push / PR | Ruff, pytest on 3.11–3.13, build + wheel smoke, harness plugin zips |
+| [`publish.yml`](../.github/workflows/publish.yml) | GitHub Release / manual | PyPI Trusted Publishing + attach `secret-broker-plugin-*.zip` to the Release |
 
 ## One-time PyPI setup (Trusted Publishing)
 

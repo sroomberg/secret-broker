@@ -24,6 +24,15 @@ plugins/
 3. Bump `contract_version` in `plugin.json` when the expected MCP tools or hook protocol change.
 4. When extracting a plugin to its own repo, move the whole `plugins/<id>/` directory; keep the contract file or depend on a published contract package.
 
+## Publishing plugins
+
+```bash
+secret-broker harness package --dest dist/plugins
+# → dist/plugins/secret-broker-plugin-cursor.zip etc.
+```
+
+CI builds these zips on every PR; the Publish workflow attaches them to GitHub Releases.
+
 ## Breakout paths (ranked)
 
 1. **Best:** publish to harness marketplace / package registry; remove from this repo.

@@ -31,16 +31,19 @@ def test_testing_guide_documents_e2e_commands():
     text = (ROOT / "TESTING.md").read_text(encoding="utf-8")
     assert "pytest -q -m e2e" in text
     assert "SECRET_BROKER_E2E_LIVE" in text
-    assert "never assert on or log real secret values" in text.lower() or (
-        "Never assert on or log real secret values" in text
-    )
+    assert "Never assert on or log real secret values" in text
+
+
+def test_ci_covers_python_matrix_and_plugins():
     text = (WORKFLOWS / "ci.yml").read_text(encoding="utf-8")
     for version in ("3.11", "3.12", "3.13"):
         assert version in text
     assert "ruff check" in text
     assert "pytest" in text
-    assert "not e2e_live" in text or "not e2e_live" in text
+    assert "not e2e_live" in text
     assert "python -m build" in text
+    assert "harness package" in text
+    assert "list_artifact_ids" in text
 
 
 def test_publish_uses_trusted_publishing():
@@ -50,3 +53,9 @@ def test_publish_uses_trusted_publishing():
     assert "environment:" in text
     assert "PYPI_API_TOKEN" not in text
     assert "password:" not in text
+
+
+def test_publish_packages_plugin_zips():
+    text = (WORKFLOWS / "publish.yml").read_text(encoding="utf-8")
+    assert "harness package" in text
+    assert "harness-plugin-zips" in text

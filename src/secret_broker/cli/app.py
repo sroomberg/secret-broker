@@ -11,6 +11,7 @@ from secret_broker import __version__
 from secret_broker.broker import Broker
 from secret_broker.cli.format import emit
 from secret_broker.config import load_config
+from secret_broker.harness.assets import PluginArtifactError, package_plugin_zips
 from secret_broker.harness.base import Scope
 from secret_broker.harness.registry import get_plugin, list_plugins
 from secret_broker.policy import PolicyDenied
@@ -360,14 +361,20 @@ def harness_install(
     cmd = _broker_command()
     results = []
     for plugin in targets:
-        result = plugin.install(
-            scope=scope,
-            root=root_p,
-            home=home_p,
-            broker_command=cmd,
-            config_path=config_path,
-            with_hooks=hooks,
-        )
+        try:
+            result = plugin.install(
+                scope=scope,
+                root=root_p,
+                home=home_p,
+                broker_command=cmd,
+                config_path=config_path,
+                with_hooks=hooks,
+            )
+        except PluginArtifactError as exc:
+            typer.secho(
+                f"{plugin.id}: contract/artifact error: {exc}", fg=typer.colors.RED, err=True
+            )
+            raise typer.Exit(code=2) from exc
         results.append(result.model_dump())
         typer.secho(
             f"{plugin.id}: mcp={result.mcp_installed} hooks={result.hooks_installed} "
@@ -376,6 +383,34 @@ def harness_install(
         )
     if _fmt(ctx) == "json":
         emit(results, fmt="json")
+
+
+@harness_app.command("package")
+def harness_package(
+    ctx: typer.Context,
+    dest: str = typer.Option(
+        "dist/plugins",
+        "--dest",
+        help="Directory for secret-broker-plugin-<id>.zip artifacts",
+    ),
+    harness: str | None = typer.Argument(None, help="Optional single harness id (default: all)"),
+) -> None:
+    """Zip plugins/<id>/ trees for GitHub Releases (near-term publish channel)."""
+    ids = [harness] if harness else None
+    try:
+        zips = package_plugin_zips(Path(dest), plugin_ids=ids)
+    except PluginArtifactError as exc:
+        typer.secho(f"package failed: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+    except KeyError as exc:
+        typer.secho(f"unknown harness: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+    payload = [str(p) for p in zips]
+    emit(
+        {"zips": payload},
+        fmt=_fmt(ctx),
+        human_lines=[f"wrote {p}" for p in zips] or ["(no plugins)"],
+    )
 
 
 @harness_app.command("uninstall")

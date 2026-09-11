@@ -6,6 +6,7 @@ import json
 import sys
 from pathlib import Path
 
+from secret_broker.harness.assets import ensure_plugin_contract, materialize_mcp_entry
 from secret_broker.harness.base import (
     HarnessPlugin,
     HarnessStatus,
@@ -15,7 +16,6 @@ from secret_broker.harness.base import (
 from secret_broker.harness.common import (
     install_hook_script,
     json_has_server,
-    mcp_stdio_entry,
     merge_mcp_servers_json,
     read_json,
     remove_mcp_server_json,
@@ -71,8 +71,14 @@ class ClaudeCodePlugin(HarnessPlugin):
         config_path: str | None,
         with_hooks: bool,
     ) -> InstallResult:
+        ensure_plugin_contract(self.id)
         mcp_path = self._mcp_path(scope=scope, root=root, home=home)
-        entry = mcp_stdio_entry(broker_command, config_path=config_path, style="claude")
+        entry = materialize_mcp_entry(
+            self.id,
+            broker_command=broker_command,
+            config_path=config_path,
+            style="claude",
+        )
         merge_mcp_servers_json(mcp_path, entry=entry)
         paths = [str(mcp_path)]
         hooks_installed = False
@@ -113,7 +119,6 @@ class ClaudeCodePlugin(HarnessPlugin):
         data = read_json(settings)
         hooks = data.setdefault("hooks", {})
         pre = hooks.setdefault("PreToolUse", [])
-        # Remove prior secret-broker entries
         hooks["PreToolUse"] = [g for g in pre if HOOK_MARKER not in json.dumps(g)]
         command = f"{sys.executable} {script}"
         hooks["PreToolUse"].append(
@@ -129,7 +134,6 @@ class ClaudeCodePlugin(HarnessPlugin):
                 ],
             }
         )
-        # Tag for detection
         data["_secret_broker_hook"] = HOOK_MARKER
         write_json(settings, data)
 
