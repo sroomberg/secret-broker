@@ -58,7 +58,7 @@ jobs:
 
       - name: Upload junit
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: junit-py${{ matrix.python-version }}
           path: junit-${{ matrix.python-version }}.xml
@@ -94,7 +94,7 @@ jobs:
           secret-broker harness list
           python -c "from secret_broker.harness.assets import list_artifact_ids; ids=list_artifact_ids(); assert ids, ids"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: python-package-distributions
           path: dist/
@@ -122,7 +122,7 @@ jobs:
       - name: Build plugin release zips
         run: secret-broker harness package --dest dist/plugins
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: harness-plugin-zips
           path: dist/plugins/*.zip
