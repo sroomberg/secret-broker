@@ -46,13 +46,16 @@ def test_ci_covers_python_matrix_and_plugins():
     assert "list_artifact_ids" in text
 
 
-def test_publish_uses_trusted_publishing():
+def test_publish_supports_trusted_publishing_and_optional_token():
     text = (WORKFLOWS / "publish.yml").read_text(encoding="utf-8")
     assert "id-token: write" in text
     assert "pypa/gh-action-pypi-publish" in text
     assert "environment:" in text
-    assert "PYPI_API_TOKEN" not in text
-    assert "password:" not in text
+    assert "name: pypi" in text
+    assert "PYPI_API_TOKEN" in text
+    assert "TESTPYPI_API_TOKEN" in text
+    assert "release:" in text
+    assert "workflow_dispatch:" in text
 
 
 def test_publish_packages_plugin_zips():

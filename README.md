@@ -134,7 +134,7 @@ pytest -q -m e2e              # local end-to-end only
 
 Full testing guide for humans and agents: [`TESTING.md`](TESTING.md).
 
-CI runs on every PR (lint + pytest 3.11–3.13 + wheel smoke). Releases publish to PyPI via Trusted Publishing — see [`docs/CI.md`](docs/CI.md).
+CI runs on every PR (lint + pytest 3.11–3.13 + wheel smoke). Releases publish to PyPI via Trusted Publishing (optional `PYPI_API_TOKEN` until OIDC is set up) — see [`docs/CI.md`](docs/CI.md).
 
 ## License
 

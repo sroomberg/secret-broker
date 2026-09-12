@@ -110,11 +110,13 @@ jobs:
           name: python-package-distributions
           path: dist/
 
+      # Empty TESTPYPI_API_TOKEN → OIDC trusted publishing; set secret to use a token instead.
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
+          password: ${{ secrets.TESTPYPI_API_TOKEN }}
 
   publish-pypi:
     name: Publish to PyPI
@@ -134,5 +136,8 @@ jobs:
           name: python-package-distributions
           path: dist/
 
+      # Empty PYPI_API_TOKEN → OIDC trusted publishing; set secret to use a token instead.
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
