@@ -2,7 +2,6 @@
 
 Publishable **artifacts** for agent harnesses live here. The Python installer in `src/secret_broker/harness/` reads these files and merges them into each product’s config.
 
-See the decision record: [`_plans/007-harness-plugin-publishing.md`](../_plans/007-harness-plugin-publishing.md).  
 Stable interface: [`CONTRACT.md`](CONTRACT.md).
 
 ## Layout
