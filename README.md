@@ -85,8 +85,7 @@ secret-broker harness install cursor
 secret-broker harness install --all --scope project --hooks
 ```
 
-Packaging / breakout strategy (monorepo now → registries later, **not** submodules):  
-[`_plans/007-harness-plugin-publishing.md`](_plans/007-harness-plugin-publishing.md).
+Packaging: monorepo `plugins/` today; break out via package registries later (**not** git submodules). See [`plugins/README.md`](plugins/README.md).
 
 Manual Cursor example (`.cursor/mcp.json` / `~/.cursor/mcp.json`):
 
@@ -136,12 +135,6 @@ pytest -q -m e2e              # local end-to-end only
 Full testing guide for humans and agents: [`TESTING.md`](TESTING.md).
 
 CI runs on every PR (lint + pytest 3.11–3.13 + wheel smoke). Releases publish to PyPI via Trusted Publishing — see [`docs/CI.md`](docs/CI.md).
-
-Design plans (architecture → spike → facade → harnesses → CI) are checked in under [`_plans/`](_plans/README.md).
-
-## Python vs Ruby
-
-Python. Ruby only if this must ship as an EasyPost gem.
 
 ## License
 

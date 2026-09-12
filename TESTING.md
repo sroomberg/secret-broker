@@ -187,4 +187,4 @@ CI runs these before pytest (`docs/CI.md`).
 3. **Live E2E** — mark `@pytest.mark.e2e_live`, skip unless `SECRET_BROKER_E2E_LIVE=1`, read refs from env.
 4. Update this file if you add a new layer or required env var.
 
-TDD workflow: `docs/CONTRIBUTING.md`. Plans: `_plans/`.
+TDD workflow: `docs/CONTRIBUTING.md`.
