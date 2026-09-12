@@ -1,0 +1,10 @@
+# Destination allowlists — never secret values
+[policy]
+default_deny_hosts = true
+allowed_hosts = ["api.github.com", "api.stripe.com", "httpbin.org"]
+allowed_bins = ["curl", "git", "gh", "aws", "terraform", "python3"]
+
+# Optional per-ref overrides
+# [policy.refs."secret://aws/prod/stripe"]
+# allowed_hosts = ["api.stripe.com"]
+# allowed_bins = ["curl"]

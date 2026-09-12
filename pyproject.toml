@@ -1,0 +1,85 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "secret-broker"
+version = "0.1.0"
+description = "Federated secret facade for AI agents: references in, values never out."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "Steven Roomberg" }]
+keywords = ["secrets", "mcp", "agents", "aws", "vault", "1password"]
+dependencies = [
+  "typer>=0.12",
+  "httpx>=0.27",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "mcp>=1.6,<3",
+  "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+aws = ["boto3>=1.34"]
+vault = ["hvac>=2.1"]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "ruff>=0.6",
+  "build>=1.2",
+  "twine>=5.0",
+  "pyyaml>=6.0",
+]
+
+[project.scripts]
+secret-broker = "secret_broker.cli.app:main"
+
+[project.urls]
+Homepage = "https://github.com/sroomberg/secret-broker"
+Repository = "https://github.com/sroomberg/secret-broker"
+Issues = "https://github.com/sroomberg/secret-broker/issues"
+Changelog = "https://github.com/sroomberg/secret-broker/releases"
+Documentation = "https://github.com/sroomberg/secret-broker/blob/master/docs/CI.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/secret_broker"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"plugins" = "secret_broker/plugin_artifacts"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+  "/examples",
+  "/plugins",
+  "/_plans",
+  "/docs",
+  "/README.md",
+  "/TESTING.md",
+  "/SPIKE.md",
+  "/LICENSE",
+  "/pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+  "unit: fast offline unit tests",
+  "e2e: local end-to-end tests (CLI/broker, no cloud)",
+  "e2e_live: live backend E2E; requires SECRET_BROKER_E2E_LIVE=1",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = [
+  "S110",
+  "B008",  # Typer Option/Argument defaults are intentional
+]

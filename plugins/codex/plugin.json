@@ -1,0 +1,13 @@
+{
+  "id": "codex",
+  "name": "Codex",
+  "contract_version": 1,
+  "supports_mcp": true,
+  "supports_hooks": true,
+  "mcp_fragment": "mcp.fragment.toml",
+  "hooks_fragment": "hooks/hooks.json",
+  "publish": {
+    "channels": ["in-tree-cli", "codex-plugin", "github-release-zip"],
+    "marketplace": "codex"
+  }
+}

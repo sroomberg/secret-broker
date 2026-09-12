@@ -1,0 +1,12 @@
+{
+  "id": "continue",
+  "name": "Continue",
+  "contract_version": 1,
+  "supports_mcp": true,
+  "supports_hooks": false,
+  "mcp_fragment": "mcp.fragment.json",
+  "publish": {
+    "channels": ["in-tree-cli", "github-release-zip"],
+    "marketplace": "continue"
+  }
+}
