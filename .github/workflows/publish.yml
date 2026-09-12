@@ -44,7 +44,7 @@ jobs:
       - name: Twine check
         run: twine check dist/*
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: python-package-distributions
           path: dist/
@@ -69,7 +69,7 @@ jobs:
       - name: Zip plugins
         run: secret-broker harness package --dest dist/plugins
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: harness-plugin-zips
           path: dist/plugins/*.zip
