@@ -14,4 +14,3 @@ secret-broker.toml
 *.jsonl
 .DS_Store
 junit-*.xml
-_plans/.tmp/

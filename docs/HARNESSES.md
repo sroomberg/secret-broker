@@ -2,7 +2,7 @@
 
 `secret-broker` installs into coding-agent harnesses as an **MCP server** (and optional **PreToolUse hooks** where the harness supports them).
 
-**Packaging model:** publishable artifacts live in [`plugins/`](../plugins/README.md); Python installers live in `src/secret_broker/harness/`. Decision record: [`_plans/007-harness-plugin-publishing.md`](../_plans/007-harness-plugin-publishing.md).
+**Packaging model:** publishable artifacts live in [`plugins/`](../plugins/README.md); Python installers live in `src/secret_broker/harness/`.
 
 ## Install
 
