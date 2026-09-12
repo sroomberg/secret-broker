@@ -53,6 +53,8 @@ def test_publish_uses_trusted_publishing():
     assert "environment:" in text
     assert "PYPI_API_TOKEN" not in text
     assert "password:" not in text
+    assert '"v*"' in text
+    assert "workflow_dispatch:" in text
 
 
 def test_publish_packages_plugin_zips():
