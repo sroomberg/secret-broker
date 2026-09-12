@@ -1,0 +1,13 @@
+{
+  "id": "claude-code",
+  "name": "Claude Code",
+  "contract_version": 1,
+  "supports_mcp": true,
+  "supports_hooks": true,
+  "mcp_fragment": "mcp.fragment.json",
+  "hooks_fragment": "hooks/hooks.json",
+  "publish": {
+    "channels": ["in-tree-cli", "claude-plugin", "github-release-zip"],
+    "marketplace": "claude-code"
+  }
+}

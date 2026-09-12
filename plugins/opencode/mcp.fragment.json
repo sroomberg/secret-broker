@@ -1,0 +1,5 @@
+{
+  "type": "local",
+  "command": ["secret-broker", "mcp"],
+  "enabled": true
+}
