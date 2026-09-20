@@ -24,10 +24,14 @@ No long-lived `PYPI_API_TOKEN` is required.
 
 ## Releasing
 
-1. Bump `version` in `pyproject.toml`.
+1. Bump `version` in `pyproject.toml` and `src/secret_broker/__init__.py` (keep them in sync).
 2. Merge to `master`.
-3. Tag and push (e.g. `git tag v0.1.0 && git push origin v0.1.0`). The **Publish** workflow uploads to PyPI.
+3. Tag and push (e.g. `git tag v0.1.1 && git push origin v0.1.1`). The **Publish** workflow uploads to PyPI.
 4. Or run **Actions → Publish → Run workflow** and choose `testpypi` / `pypi`.
+
+### Next tag after history rewrite (2026-09-20)
+
+`v0.1.0` is already on PyPI from the first publish. A force-push that moved the `v0.1.0` tag re-triggered **Publish** and failed with `400 File already exists` for `secret_broker-0.1.0-*`. Do **not** re-use `v0.1.0`. After merging the `0.1.1` version bump, cut **`v0.1.1`** on `master` to publish the new release.
 
 ## Local parity
 

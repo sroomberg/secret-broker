@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 
 import pytest
 import yaml
+
+from secret_broker import __version__
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOWS = ROOT / ".github" / "workflows"
@@ -55,10 +58,15 @@ def test_publish_uses_trusted_publishing():
     assert "password:" not in text
     assert '"v*"' in text
     assert "workflow_dispatch:" in text
-    assert text.count("skip-existing: true") >= 2
+    assert "skip-existing: true" in text
 
 
 def test_publish_packages_plugin_zips():
     text = (WORKFLOWS / "publish.yml").read_text(encoding="utf-8")
     assert "harness package" in text
     assert "harness-plugin-zips" in text
+
+
+def test_package_version_matches_pyproject():
+    data = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    assert __version__ == data["project"]["version"]

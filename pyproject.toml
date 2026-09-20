@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "secret-broker"
-version = "0.1.0"
+version = "0.1.1"
 description = "Federated secret facade for AI agents: references in, values never out."
 readme = "README.md"
 license = "MIT"
