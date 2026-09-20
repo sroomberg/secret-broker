@@ -55,6 +55,7 @@ def test_publish_uses_trusted_publishing():
     assert "password:" not in text
     assert '"v*"' in text
     assert "workflow_dispatch:" in text
+    assert text.count("skip-existing: true") >= 2
 
 
 def test_publish_packages_plugin_zips():
